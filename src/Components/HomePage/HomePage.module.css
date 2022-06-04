@@ -13,17 +13,17 @@ p {
 }
 
 .LoginButton {
-  margin-top: 21em;
+  margin-top: calc(45vh + 5vw);
 }
 
 .WelcomeText {
-  margin-top: 10em;
+  margin-top: calc(7vh + 15vw);
 }
 
 .Ellipse1 {
   position: absolute;
-  width: 45em;
-  height: 25em;
+  width: 130vw;
+  height: 45vh;
   top: 5em;
 
   border-radius: 50%;
@@ -35,9 +35,9 @@ p {
   box-sizing: border-box;
 
   position: absolute;
-  width: 18em;
-  height: 13em;
-  top: 25em;
+  width: 80vw;
+  height: 25vh;
+  top: 50vh;
 
   border-radius: 50%;
   background: #1A9F87;
