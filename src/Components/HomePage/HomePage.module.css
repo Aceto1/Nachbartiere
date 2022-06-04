@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+  color: #000;
+  height: calc(100vh - 3em);
+}
+
+p {
+  z-index: 1;
+}
+
+.LoginButton {
+  margin-top: 21em;
+}
+
+.WelcomeText {
+  margin-top: 10em;
+}
+
+.Ellipse1 {
+  position: absolute;
+  width: 45em;
+  height: 25em;
+  top: 5em;
+
+  border-radius: 50%;
+  background: #2BC094;
+  transform: rotate(-15deg);
+}
+
+.Ellipse2 {
+  box-sizing: border-box;
+
+  position: absolute;
+  width: 18em;
+  height: 13em;
+  top: 25em;
+
+  border-radius: 50%;
+  background: #1A9F87;
+  border: 1px solid #000000;
+  transform: rotate(15deg);
+}
