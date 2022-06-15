@@ -1,0 +1,30 @@
+.container {
+  background-color: #1a202c;
+  height: calc(100vh - 4em);
+}
+
+.captureButton {
+  height: 4em;
+  width: 4em;
+  background-color: white;
+  position: fixed;
+  left: 50%;
+  bottom: 20%;
+  transform: translate(-50%, 0);
+  border-radius: 50%;
+  opacity: 0.5;
+  box-shadow:  0px 0px 0px 10px rgba(255, 255, 255, 0.15);
+}
+
+.saveForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
+  height: calc(100vh - 4em);
+  overflow: scroll;
+}
+
+.saveForm > * {
+  margin-bottom: 1em;
+}

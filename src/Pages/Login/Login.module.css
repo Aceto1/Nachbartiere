@@ -31,6 +31,12 @@ p {
   transform: rotate(-15deg);
 }
 
+.Frog {
+  position: absolute;
+  height: 70vh;
+  top: 0;
+}
+
 .Ellipse2 {
   box-sizing: border-box;
 
