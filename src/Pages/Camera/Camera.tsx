@@ -49,6 +49,9 @@ const Camera: React.FC = () => {
           screenshotFormat="image/jpeg"
           width={window.innerWidth}
           ref={webcamRef}
+          videoConstraints = {{
+            facingMode: 'environment'
+          }}
           style={{
             height: '100%',
             maxWidth: '100%',
