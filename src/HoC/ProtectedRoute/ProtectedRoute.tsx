@@ -1,29 +1,23 @@
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import React, { ComponentType } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import React from "react";
 import { Spinner } from '@chakra-ui/react'
-import { useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-interface ProtectedRouteProps {
-  component: ComponentType;
-}
-
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
-  component,
-}) => {
+export const ProtectedRoute: React.FC = () => {
   const { isLoading, isAuthenticated } = useAuth0();
-  const navigate = useNavigate();
 
   if (isLoading)
-    return <Spinner />
+    return <Spinner
+      thickness="4px"
+      speed="0.65s"
+      emptyColor="gray.200"
+      color="blue.500"
+      size="xl"
+      top='50%'
+      left='50%'
+      transform='translate(-50%, -50%)'
+      position='fixed'
+    />
 
-  if (!isAuthenticated) {
-    navigate("/login");
-    return <Spinner />
-  }
-
-  const Component = withAuthenticationRequired(component, {
-    onRedirecting: () => <Spinner />,
-  });
-
-  return <Component />;
+  return isAuthenticated ? <Outlet /> : <Navigate to="/auth" />;
 };

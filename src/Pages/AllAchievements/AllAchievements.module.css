@@ -1,0 +1,18 @@
+.container {
+  padding: 1em;
+  margin-bottom: 5em;
+}
+
+.container > ul {
+  list-style-type: none;
+}
+
+.heading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.heading > * {
+  margin-right: 0.5em;
+}

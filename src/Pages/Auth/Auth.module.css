@@ -16,6 +16,10 @@ p {
   margin-top: calc(45vh + 5vw);
 }
 
+.SignUpButton {
+  margin-top: calc(15px);
+}
+
 .WelcomeText {
   margin-top: calc(7vh + 15vw);
 }

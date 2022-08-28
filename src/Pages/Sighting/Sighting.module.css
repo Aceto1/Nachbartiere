@@ -1,0 +1,29 @@
+.container {
+  padding: 1em;
+  margin-bottom: 5em;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+.heading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.content {
+  text-align: center;
+}
+
+.content > p {
+  margin-bottom: 1em;
+}
+
+.map {
+  overflow: hidden;
+}
+
+.latin {
+  color: #999;
+}

@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+
+.headerContainer {
+  height: 40vh;
+  background-color: #2BC094;
+  position: relative;
+}
+
+.bird {
+  top: 10px;
+  position: absolute;
+  margin: auto;
+  z-index: 1;
+}
+
+.ellipse {
+  position: absolute;
+  width: 100vw;
+  height: 25vh;
+  left: -30vw;
+  top: 20vh;
+  border-radius: 50%;
+  z-index: 0;
+  background: #D7EBDF;
+}
+
+.inputContainer {
+  padding: 5vw;
+  z-index: 1;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputContainer > * {
+  margin-top: 1em;
+}
+
+h1 {
+  margin: 0 !important;
+}

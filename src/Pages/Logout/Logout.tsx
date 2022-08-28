@@ -2,14 +2,14 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Spinner } from "@chakra-ui/react";
 import { useEffect } from "react";
 
-const Login: React.FC = () => {
-  const { loginWithRedirect } = useAuth0();
+const Logout: React.FC = () => {
+  const { logout } = useAuth0();
 
   useEffect(() => {
-    loginWithRedirect({
-      redirectUri: process.env.REACT_APP_AUTH0_REDIRECT_URI
+    logout({
+      returnTo: window.origin + '/auth',
     });
-  }, [loginWithRedirect]);
+  }, [logout]);
 
   return <Spinner
     thickness="4px"
@@ -24,4 +24,4 @@ const Login: React.FC = () => {
   />;
 }
 
-export default Login;
+export default Logout;

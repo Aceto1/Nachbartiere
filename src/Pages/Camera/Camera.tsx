@@ -1,19 +1,48 @@
-import { FormControl, FormLabel, Input, FormHelperText, Button, Heading, Select, InputRightElement, Icon, InputGroup } from "@chakra-ui/react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { FormControl, FormLabel, Input, FormHelperText, Button, Heading, Select, InputRightElement, Icon, InputGroup, useToast, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, useDisclosure } from "@chakra-ui/react";
 import * as React from "react";
 import { MdLocationPin } from "react-icons/md";
 import Webcam from "react-webcam";
+import { getTextForAchievement, getTitleForAchievement } from "../../helper/AchievementTextHelper";
+import Achievement from "../../types/Achievement";
+import AddSightingArgument from "../../types/AddSightingArgument";
+import AnimalKind from "../../types/AnimalKind";
 
 import styles from './Camera.module.css';
 
 const Camera: React.FC = () => {
   const [screenshot, setScreenshot] = React.useState<any>(undefined);
-  const [animal, setAnimal] = React.useState<string | undefined>(undefined);
-  const [location, setLocation] = React.useState<string | undefined>(undefined);
+  const [selectedCameraId, setSelectedCameraId] = React.useState<string | undefined>(undefined);
+  const [animal, setAnimal] = React.useState<AnimalKind | undefined>(undefined);
+  const [location, setLocation] = React.useState<string>("");
   const [isLocationLoading, setIsLocationLoading] = React.useState(false);
   const [count, setCount] = React.useState<number>(1);
-  const [memo, setMemo] = React.useState<string | undefined>(undefined);
+  const [memo, setMemo] = React.useState<string>("");
+  const [newAchievements, setNewAchievements] = React.useState<Achievement[]>([]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isSavingLoading, setIsSavingLoading] = React.useState(false);
+
+  const { user, getAccessTokenSilently } = useAuth0();
+  const toast = useToast();
 
   const webcamRef = React.useRef(null);
+  const cameraIds = []
+
+  const changeCamera = () => {
+
+  }
+
+  const reset = () => {
+    setScreenshot(undefined);
+    setIsSavingLoading(false);
+    setAnimal(undefined);
+    setCount(1);
+    setIsLocationLoading(false);
+    setMemo("");
+    setLocation("");
+    setNewAchievements([]);
+  }
 
   const takeScreenshot = React.useCallback(
     () => {
@@ -25,7 +54,7 @@ const Camera: React.FC = () => {
   const useCurrentLocation = () => {
     if (navigator.geolocation) {
       setIsLocationLoading(true);
-      navigator.geolocation.getCurrentPosition(location =>  {
+      navigator.geolocation.getCurrentPosition(location => {
         setLocation(`${location.coords.latitude},${location.coords.longitude}`);
         setIsLocationLoading(false);
       });
@@ -33,11 +62,66 @@ const Camera: React.FC = () => {
   }
 
   const discard = () => {
-    setScreenshot(undefined);
+    reset();
   }
 
-  const save = () => {
-    //TODO
+  const save = async () => {
+    setIsSavingLoading(true);
+
+    const token = await getAccessTokenSilently();
+
+    const addSightingArgument: AddSightingArgument = {
+      count: count,
+      animalKind: animal ?? 0,
+      createdBy: user?.sub ?? "",
+      description: memo,
+      location: location,
+      picture: screenshot
+    }
+
+    const result = await fetch(`${process.env.REACT_APP_BACKEND_URL}Sightings/add`, {
+      mode: 'cors',
+      method: 'POST',
+      body: JSON.stringify(addSightingArgument),
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!result.ok) {
+      toast({
+        title: 'Senden fehlgeschlagen',
+        description: "Probieren Sie es später noch einmal.",
+        status: 'error',
+        duration: 2500,
+        isClosable: true,
+      });
+
+      setIsSavingLoading(false);
+    } else {
+      toast({
+        position: 'top',
+        title: 'Senden erfolgreich!',
+        status: 'success',
+        duration: 2500,
+        isClosable: true,
+      });
+
+      const newAchievements: Achievement[] = await result.json();
+
+      if (newAchievements.length > 0) {
+        setNewAchievements(newAchievements);
+        onOpen();
+      }
+      else
+        reset();
+    }
+  }
+
+  const onDialogClose = () => {
+    reset();
+    onClose();
   }
 
   if (screenshot == null)
@@ -49,8 +133,9 @@ const Camera: React.FC = () => {
           screenshotFormat="image/jpeg"
           width={window.innerWidth}
           ref={webcamRef}
-          videoConstraints = {{
-            facingMode: 'environment'
+          videoConstraints={{
+            facingMode: 'environment',
+            deviceId: selectedCameraId
           }}
           style={{
             height: '100%',
@@ -63,18 +148,42 @@ const Camera: React.FC = () => {
   else
     return (
       <form className={styles.saveForm}>
+        <Modal isOpen={isOpen} onClose={onDialogClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>{newAchievements.length > 1 ? "Neue Achievements!": "Neues Achievement!"}</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              {newAchievements.map(m => (
+                <>
+                  <Heading as="h2">{getTitleForAchievement(m)}</Heading>
+                  <p>{getTextForAchievement(m)}</p>
+                </>
+              ))}
+            </ModalBody>
+
+            <ModalFooter>
+              <Button mr={3} onClick={onDialogClose}>
+                Cool
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+
         <Heading as='h1'>Dein Schnappschuss</Heading>
 
         <img src={screenshot} alt='captured'></img>
 
         <FormControl>
           <FormLabel htmlFor='animal'>Welches Tier hast du gesehen?</FormLabel>
-          <Select id='animal' placeholder='Wähle eine Tierart aus...' value={animal} onChange={event => setAnimal(event.target.value)}>
-            <option value='fox'>Fuchs</option>
-            <option value='duck'>Ente</option>
-            <option value='amsel'>Amsel</option>
-            <option value='idk'>???</option>
+          <Select id='animal' placeholder='Wähle eine Tierart aus...' value={animal} onChange={event => setAnimal(Number.parseInt(event.target.value))}>
+            {Object.keys(AnimalKind).filter(item => isNaN(Number(item))).map((animalKind, i) =>
+              <option key={i} value={i}>{animalKind}</option>
+            )}
           </Select>
+          {animal === 0 &&
+            <FormHelperText>Schreibe in die Bemerkung, um welches Tier es sich handelt.</FormHelperText>
+          }
         </FormControl>
 
         <FormControl>
@@ -102,7 +211,7 @@ const Camera: React.FC = () => {
         </FormControl>
 
         <div>
-          <Button colorScheme='green' margin='1em' onClick={save}>Speichern</Button>
+          <Button colorScheme='green' margin='1em' onClick={save} disabled={animal == null || location.trim() === "" || (animal === AnimalKind["Nicht in der Liste"] && memo === "")} isLoading={isSavingLoading}>Speichern</Button>
           <Button colorScheme='gray' margin='1em' onClick={discard}>Verwerfen</Button>
         </div>
       </form>
