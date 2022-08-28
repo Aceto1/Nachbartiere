@@ -1,0 +1,13 @@
+.container {
+  padding: 1em;
+  margin-bottom: 5em;
+}
+
+.container > ul {
+  list-style-type: none;
+}
+
+.container > p {
+  margin-top: 0.5em;
+  font-size: 1.25em;
+}
