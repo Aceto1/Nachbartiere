@@ -86,6 +86,7 @@ const Homepage: React.FC = () => {
           <p>Deine letzten Achievements:</p>
           {recentAchievements?.map(achievement => (
             <Achievement
+              key={achievement.achievementKind}
               achievement={achievement.achievementKind}
               unlocked={true}
             />

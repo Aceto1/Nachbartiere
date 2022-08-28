@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { ArrowBackIcon } from "@chakra-ui/icons";
-import { Heading, IconButton } from "@chakra-ui/react";
+import { Heading, IconButton, RangeSliderFilledTrack } from "@chakra-ui/react";
 import { FC, useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
@@ -11,7 +11,7 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 
 import styles from './Sighting.module.css';
-import L from "leaflet";
+import L, { LatLng } from "leaflet";
 import AnimalKind from "../../types/AnimalKind";
 
 let DefaultIcon = L.icon({
@@ -66,6 +66,15 @@ const Sighting: FC = () => {
     }
   }
 
+  const location: L.LatLngExpression = [50.92878, 11.5899];
+  const regex = /^([\d.]+[\d.]*),([\d.]+[\d.]*)$/;
+
+  if (sighting?.location != null && regex.test(sighting.location)) {
+    const exec = regex.exec(sighting?.location);
+    location[0] = Number.parseFloat(exec![1]);
+    location[1] = Number.parseFloat(exec![2]);
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.heading}>
@@ -93,16 +102,25 @@ const Sighting: FC = () => {
             <p>{sighting?.description}</p>
           </>
         }
-        <Heading as="h3" fontSize="1.25em">Standort</Heading>
-        <div className={styles.map}>
-          <MapContainer center={[50.940114, 11.5934713]} zoom={13} scrollWheelZoom={false} dragging={false} doubleClickZoom={false}>
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={[50.940114, 11.5934713]} />
-          </MapContainer>
-        </div>
+        {sighting?.location != null &&
+          <>
+            <Heading as="h3" fontSize="1.25em">Standort</Heading>
+            {regex.test(sighting.location) &&
+              <div className={styles.map}>
+                <MapContainer center={location} zoom={13} scrollWheelZoom={false} dragging={false} doubleClickZoom={false}>
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={location} />
+                </MapContainer>
+              </div>
+            }
+            {!regex.test(sighting.location) &&
+              <p>{sighting.location}</p>
+            }
+          </>
+        }
       </div>
     </div>
   );
